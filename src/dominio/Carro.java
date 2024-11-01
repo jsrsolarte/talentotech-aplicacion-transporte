@@ -3,8 +3,8 @@ package dominio;
 import interfaces.Conducible;
 
 public class Carro extends Vehiculo implements Conducible {
-    public Carro(int id, String marca, String modelo, int capacidad, String placa) {
-        super(id, marca, modelo, capacidad, placa);
+    public Carro(int id, String marca, String modelo, int capacidad, String placa, Conductor conductor) {
+        super(id, marca, modelo, capacidad, placa, conductor);
     }
 
     @Override

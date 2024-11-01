@@ -4,8 +4,8 @@ import interfaces.Conducible;
 
 public class Moto extends Vehiculo implements Conducible {
 
-    public Moto(int id, String marca, String modelo, int capacidad, String placa) {
-        super(id, marca, modelo, capacidad, placa);
+    public Moto(int id, String marca, String modelo, int capacidad, String placa, Conductor conductor) {
+        super(id, marca, modelo, capacidad, placa, conductor);
     }
 
     @Override

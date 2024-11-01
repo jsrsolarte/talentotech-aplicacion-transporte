@@ -3,12 +3,10 @@ package dominio;
 import java.util.ArrayList;
 
 public class Usuario extends Persona {
-    private String direccion;
     private ArrayList<Viaje> viajes; // Relación: un usuario puede tener múltiples viajes
 
-    public Usuario(int id, String nombre, String telefono, String direccion) {
+    public Usuario(int id, String nombre, String telefono) {
         super(id, nombre, telefono);
-        this.direccion = direccion;
         this.viajes = new ArrayList<>();
     }
 

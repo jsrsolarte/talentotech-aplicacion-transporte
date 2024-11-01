@@ -10,7 +10,6 @@ public class Main {
         manejarMenu();
     }
 
-
     private static void manejarMenu() {
         BaseDatos baseDeDatos = new BaseDatos();
         Scanner scanner = new Scanner(System.in);
@@ -57,15 +56,11 @@ public class Main {
 
     }
 
-
     private static void manejarUsuario(BaseDatos baseDeDatos, Scanner scanner) {
-        System.out.print("Ingresa tu teléfono: ");
-        String telefonoUsuario = scanner.nextLine();
+        System.out.print("Ingresa tu id: ");
+        int idUsuario = scanner.nextInt();
 
-        Usuario usuario = baseDeDatos.listarUsuarios().stream()
-                .filter(u -> u.getTelefono().equals(telefonoUsuario))
-                .findFirst()
-                .orElse(null);
+        Usuario usuario = baseDeDatos.obtenerUsuario(idUsuario);
 
         if (usuario == null) {
             System.out.println("Usuario no encontrado.");
@@ -88,10 +83,8 @@ public class Main {
                     case 1:
                         // Ver historial de viajes
                         System.out.println("Historial de viajes:");
-                        for (Viaje viaje : baseDeDatos.listarViajes()) {
-                            if (viaje.getUsuario().getTelefono().equals(usuario.getTelefono())) {
-                                System.out.println("Conductor: " + viaje.getConductor().getNombre() + ", Tarifa: " + viaje.obtenerTarifa());
-                            }
+                        for (Viaje viaje : baseDeDatos.obtenerViajesDelUsuario(idUsuario)) {
+                            System.out.println(viaje.obtenerDescripcion());
                         }
                         break;
 
@@ -107,18 +100,16 @@ public class Main {
                         System.out.println("Vehículos disponibles:");
 
                         ArrayList<Vehiculo> vehiculosDisponibles = baseDeDatos.listarVehiculos();
-                        int i = 1;
                         for (Vehiculo vehiculo : vehiculosDisponibles) {
                             if (vehiculo.obtenerTipo().equals(tipoVehiculoStr)) {
-                                System.out.println(i + ". " + vehiculo.obtenerDescripcion());
-                                i++;
+                                System.out.println(vehiculo.obtenerDescripcion());
                             }
                         }
 
                         System.out.print("Seleccione el id del vehículo: ");
-                        int modeloVehiculo = scanner.nextInt();
+                        int idVehiculo = scanner.nextInt();
 
-                        vehiculoElegido =
+                        Vehiculo vehiculoElegido = baseDeDatos.obtenerVehiculo(idVehiculo);
 
                         if (vehiculoElegido != null) {
                             System.out.print("Número de pasajeros: ");
@@ -128,21 +119,13 @@ public class Main {
                             scanner.nextLine(); // Limpiar el buffer
 
                             // Obtener conductor disponible
-                            Conductor conductorDisponible = baseDeDatos.listarConductores().stream()
-                                    .filter(c -> c.getVehiculo().getModelo().equals(vehiculoElegido.getModelo()))
-                                    .findFirst()
-                                    .orElse(null);
 
-                            if (conductorDisponible != null) {
-                                try {
-                                    Viaje nuevoViaje = new Viaje(usuario, conductorDisponible, pasajeros, minutos);
-                                    baseDeDatos.agregarViaje(nuevoViaje);
-                                    System.out.println("Viaje realizado. Tarifa: " + nuevoViaje.obtenerTarifa());
-                                } catch (CapacidadExcedidaException e) {
-                                    System.out.println(e.getMessage());
-                                }
-                            } else {
-                                System.out.println("No hay conductores disponibles para este vehículo.");
+                            try {
+                                Viaje nuevoViaje = new Viaje(usuario, vehiculoElegido, pasajeros, minutos);
+                                baseDeDatos.agregarViaje(nuevoViaje);
+                                System.out.println("Viaje realizado. Tarifa: " + nuevoViaje.obtenerTarifa());
+                            } catch (CapacidadExcedidaException e) {
+                                System.out.println(e.getMessage());
                             }
                         } else {
                             System.out.println("Vehículo no encontrado.");
@@ -166,13 +149,10 @@ public class Main {
     }
 
     private static void manejarConductor(BaseDatos baseDeDatos, Scanner scanner) {
-        System.out.print("Ingresa tu teléfono: ");
-        String telefonoConductor = scanner.nextLine();
+        System.out.print("Ingresa tu id: ");
+        int idConductor = scanner.nextInt();
 
-        Conductor conductor = baseDeDatos.listarConductores().stream()
-                .filter(c -> c.getTelefono().equals(telefonoConductor))
-                .findFirst()
-                .orElse(null);
+        Conductor conductor = baseDeDatos.obtenerConductor(idConductor);
 
         if (conductor == null) {
             System.out.println("Conductor no encontrado.");
@@ -195,18 +175,14 @@ public class Main {
                     case 1:
                         // Ver historial de viajes
                         System.out.println("Historial de viajes:");
-                        for (Viaje viaje : baseDeDatos.listarViajes()) {
-                            if (viaje.getConductor().getTelefono().equals(conductor.getTelefono())) {
-                                System.out.println("Usuario: " + viaje.getUsuario().getNombre() + ", Tarifa: " + viaje.obtenerTarifa());
-                            }
+                        for (Viaje viaje : baseDeDatos.listarViajesDelConductor(idConductor)) {
+                            System.out.println(viaje.obtenerDescripcion());
                         }
                         break;
 
                     case 2:
                         // Ver datos del vehículo
-                        System.out.println("Datos del vehículo:");
-                        System.out.println("Modelo: " + conductor.getVehiculo().getModelo());
-                        System.out.println("Tipo: " + (conductor.getVehiculo() instanceof Carro ? "Coche" : "Moto"));
+                        System.out.println(conductor.getVehiculo().obtenerDescripcion());
                         break;
 
                     case 0:
